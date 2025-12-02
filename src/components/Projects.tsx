@@ -1,5 +1,5 @@
 import { Project } from '@/types';
-import ImageUpload from '@/components/ImageUpload';
+import Icon from '@/components/ui/icon';
 
 interface ProjectsProps {
   projects: Project[];
@@ -8,7 +8,8 @@ interface ProjectsProps {
 }
 
 const Projects = ({ projects, onProjectClick, onProjectUpdate }: ProjectsProps) => {
-  const handleCoverImageChange = (projectId: string, imageUrl: string) => {
+  const handleCoverImageChange = (e: React.MouseEvent, projectId: string, imageUrl: string) => {
+    e.stopPropagation();
     const project = projects.find(p => p.id === projectId);
     if (project) {
       onProjectUpdate({ ...project, coverImage: imageUrl });
@@ -23,18 +24,43 @@ const Projects = ({ projects, onProjectClick, onProjectUpdate }: ProjectsProps) 
           {projects.map((project, index) => (
             <div 
               key={project.id}
-              className="animate-fade-in"
+              className="group cursor-pointer animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
+              onClick={() => onProjectClick(project)}
             >
-              <div className="cursor-pointer" onClick={() => onProjectClick(project)}>
-                <ImageUpload
-                  currentImage={project.coverImage}
-                  onImageChange={(url) => handleCoverImageChange(project.id, url)}
-                  label={`Обложка: ${project.title}`}
-                  aspectRatio="aspect-[3/4]"
+              <div className="aspect-[3/4] overflow-hidden bg-gray-100 mb-4 relative">
+                <img 
+                  src={project.coverImage} 
+                  alt={project.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
+                <div 
+                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                    <Icon name="Upload" size={18} />
+                    Загрузить обложку
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleCoverImageChange(e as any, project.id, reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </label>
+                </div>
               </div>
-              <h3 className="text-2xl font-light mb-2 mt-4">{project.title}</h3>
+              <h3 className="text-2xl font-light mb-2">{project.title}</h3>
               {project.year && (
                 <p className="text-sm text-gray-500">{project.year}</p>
               )}

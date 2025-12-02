@@ -1,6 +1,5 @@
 import { Project } from '@/types';
 import Icon from '@/components/ui/icon';
-import ImageUpload from '@/components/ImageUpload';
 
 interface ProjectDetailProps {
   project: Project;
@@ -44,19 +43,39 @@ const ProjectDetail = ({ project, onBack, onUpdate }: ProjectDetailProps) => {
             <p className="text-xl leading-relaxed text-gray-700">{project.description}</p>
           </div>
 
-          <div className="space-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {project.images.map((image, index) => (
               <div 
                 key={index}
-                className="animate-fade-in"
+                className="group relative aspect-[4/3] overflow-hidden bg-gray-100 animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <ImageUpload
-                  currentImage={image}
-                  onImageChange={(url) => handleImageChange(index, url)}
-                  label={`Фото ${index + 1} из ${project.images.length}`}
-                  aspectRatio="aspect-auto"
+                <img 
+                  src={image} 
+                  alt={`${project.title} - фото ${index + 1}`}
+                  className="w-full h-full object-cover"
                 />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <label className="cursor-pointer bg-white text-black px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                    <Icon name="Upload" size={18} />
+                    Загрузить фото {index + 1}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            handleImageChange(index, reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
             ))}
           </div>
