@@ -26,6 +26,11 @@ const ImageUpload = ({ currentImage, onImageChange, label, aspectRatio = 'aspect
     }
   };
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="relative group">
       <div className={`${aspectRatio} overflow-hidden bg-gray-100 relative`}>
@@ -34,10 +39,10 @@ const ImageUpload = ({ currentImage, onImageChange, label, aspectRatio = 'aspect
           alt={label || 'Загрузить изображение'}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
           <Button
             type="button"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={handleButtonClick}
             variant="secondary"
             className="gap-2"
           >
