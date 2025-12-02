@@ -8,8 +8,7 @@ interface ProjectsProps {
 }
 
 const Projects = ({ projects, onProjectClick, onProjectUpdate }: ProjectsProps) => {
-  const handleCoverImageChange = (e: React.MouseEvent, projectId: string, imageUrl: string) => {
-    e.stopPropagation();
+  const handleCoverImageChange = (projectId: string, imageUrl: string) => {
     const project = projects.find(p => p.id === projectId);
     if (project) {
       onProjectUpdate({ ...project, coverImage: imageUrl });
@@ -50,7 +49,7 @@ const Projects = ({ projects, onProjectClick, onProjectUpdate }: ProjectsProps) 
                         if (file) {
                           const reader = new FileReader();
                           reader.onloadend = () => {
-                            handleCoverImageChange(e as any, project.id, reader.result as string);
+                            handleCoverImageChange(project.id, reader.result as string);
                           };
                           reader.readAsDataURL(file);
                         }
