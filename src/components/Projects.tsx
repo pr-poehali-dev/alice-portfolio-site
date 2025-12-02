@@ -1,11 +1,20 @@
-import { projects } from '@/data/projects';
 import { Project } from '@/types';
+import ImageUpload from '@/components/ImageUpload';
 
 interface ProjectsProps {
+  projects: Project[];
   onProjectClick: (project: Project) => void;
+  onProjectUpdate: (project: Project) => void;
 }
 
-const Projects = ({ onProjectClick }: ProjectsProps) => {
+const Projects = ({ projects, onProjectClick, onProjectUpdate }: ProjectsProps) => {
+  const handleCoverImageChange = (projectId: string, imageUrl: string) => {
+    const project = projects.find(p => p.id === projectId);
+    if (project) {
+      onProjectUpdate({ ...project, coverImage: imageUrl });
+    }
+  };
+
   return (
     <section id="projects" className="py-20 px-6">
       <div className="max-w-7xl mx-auto">
@@ -14,18 +23,18 @@ const Projects = ({ onProjectClick }: ProjectsProps) => {
           {projects.map((project, index) => (
             <div 
               key={project.id}
-              className="group cursor-pointer animate-fade-in"
+              className="animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => onProjectClick(project)}
             >
-              <div className="aspect-[3/4] overflow-hidden bg-gray-100 mb-4">
-                <img 
-                  src={project.coverImage} 
-                  alt={project.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              <div className="cursor-pointer" onClick={() => onProjectClick(project)}>
+                <ImageUpload
+                  currentImage={project.coverImage}
+                  onImageChange={(url) => handleCoverImageChange(project.id, url)}
+                  label={`Обложка: ${project.title}`}
+                  aspectRatio="aspect-[3/4]"
                 />
               </div>
-              <h3 className="text-2xl font-light mb-2">{project.title}</h3>
+              <h3 className="text-2xl font-light mb-2 mt-4">{project.title}</h3>
               {project.year && (
                 <p className="text-sm text-gray-500">{project.year}</p>
               )}

@@ -1,4 +1,11 @@
-const Hero = () => {
+import ImageUpload from '@/components/ImageUpload';
+
+interface HeroProps {
+  image: string;
+  onImageChange: (imageUrl: string) => void;
+}
+
+const Hero = ({ image, onImageChange }: HeroProps) => {
   return (
     <section className="min-h-screen flex items-center justify-center px-6 py-20 animate-fade-in">
       <div className="max-w-6xl mx-auto">
@@ -21,13 +28,12 @@ const Hero = () => {
             </div>
           </div>
           <div className="order-1 md:order-2">
-            <div className="aspect-[3/4] overflow-hidden bg-gray-100">
-              <img 
-                src="/placeholder.svg" 
-                alt="Алиса Меликова"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <ImageUpload
+              currentImage={image}
+              onImageChange={onImageChange}
+              label="Портрет художницы"
+              aspectRatio="aspect-[3/4]"
+            />
           </div>
         </div>
       </div>

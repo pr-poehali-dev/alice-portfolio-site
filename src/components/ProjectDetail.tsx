@@ -1,12 +1,19 @@
 import { Project } from '@/types';
 import Icon from '@/components/ui/icon';
+import ImageUpload from '@/components/ImageUpload';
 
 interface ProjectDetailProps {
   project: Project;
   onBack: () => void;
+  onUpdate: (project: Project) => void;
 }
 
-const ProjectDetail = ({ project, onBack }: ProjectDetailProps) => {
+const ProjectDetail = ({ project, onBack, onUpdate }: ProjectDetailProps) => {
+  const handleImageChange = (index: number, imageUrl: string) => {
+    const updatedImages = [...project.images];
+    updatedImages[index] = imageUrl;
+    onUpdate({ ...project, images: updatedImages });
+  };
   return (
     <div className="min-h-screen bg-white">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
@@ -44,10 +51,11 @@ const ProjectDetail = ({ project, onBack }: ProjectDetailProps) => {
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <img 
-                  src={image} 
-                  alt={`${project.title} - изображение ${index + 1}`}
-                  className="w-full h-auto"
+                <ImageUpload
+                  currentImage={image}
+                  onImageChange={(url) => handleImageChange(index, url)}
+                  label={`Фото ${index + 1} из ${project.images.length}`}
+                  aspectRatio="aspect-auto"
                 />
               </div>
             ))}
