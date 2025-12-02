@@ -1,5 +1,7 @@
 import { Project } from '@/types';
 import Icon from '@/components/ui/icon';
+import { Button } from '@/components/ui/button';
+import { useRef } from 'react';
 
 interface ProjectDetailProps {
   project: Project;
@@ -8,10 +10,24 @@ interface ProjectDetailProps {
 }
 
 const ProjectDetail = ({ project, onBack, onUpdate }: ProjectDetailProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleImageChange = (index: number, imageUrl: string) => {
     const updatedImages = [...project.images];
     updatedImages[index] = imageUrl;
     onUpdate({ ...project, images: updatedImages });
+  };
+
+  const handleAddNewImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const updatedImages = [...project.images, reader.result as string];
+        onUpdate({ ...project, images: updatedImages });
+      };
+      reader.readAsDataURL(file);
+    }
   };
   return (
     <div className="min-h-screen bg-white">
@@ -39,8 +55,25 @@ const ProjectDetail = ({ project, onBack, onUpdate }: ProjectDetailProps) => {
             </div>
           </div>
 
-          <div className="prose prose-lg max-w-3xl mx-auto mb-16">
+          <div className="prose prose-lg max-w-3xl mx-auto mb-8">
             <p className="text-xl leading-relaxed text-gray-700">{project.description}</p>
+          </div>
+
+          <div className="flex justify-center mb-12">
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              className="gap-2 bg-black text-white hover:bg-gray-800"
+            >
+              <Icon name="Plus" size={20} />
+              Добавить новое фото в галерею
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAddNewImage}
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
